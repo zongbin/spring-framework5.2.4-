@@ -279,8 +279,12 @@ configure(allprojects) { project ->
 			cacheChangingModulesFor 0, "seconds"
 		}
 		repositories {
-			mavenCentral()
+			//先从本地仓库找jar包
+            //mavenLocal()
+            //使用阿里云公共仓库
+            maven { url "http://maven.aliyun.com/repository/public/"}
 			maven { url "https://repo.spring.io/libs-spring-framework-build" }
+            //mavenCentral()
 		}
 	}
 	configurations.all {
