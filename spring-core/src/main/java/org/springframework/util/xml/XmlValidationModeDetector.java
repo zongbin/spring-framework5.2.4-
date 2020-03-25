@@ -37,22 +37,26 @@ public class XmlValidationModeDetector {
 
 	/**
 	 * Indicates that the validation should be disabled.
+	 * 禁用校验
 	 */
 	public static final int VALIDATION_NONE = 0;
 
 	/**
 	 * Indicates that the validation mode should be auto-guessed, since we cannot find
 	 * a clear indication (probably choked on some special characters, or the like).
+	 * 无校验模式，需要自动检测
 	 */
 	public static final int VALIDATION_AUTO = 1;
 
 	/**
 	 * Indicates that DTD validation should be used (we found a "DOCTYPE" declaration).
+	 * 使用DTD校验（如果找到了DOCTYPE声明）
 	 */
 	public static final int VALIDATION_DTD = 2;
 
 	/**
 	 * Indicates that XSD validation should be used (found no "DOCTYPE" declaration).
+	 * 使用XSD校验（如果没有找到了DOCTYPE声明）
 	 */
 	public static final int VALIDATION_XSD = 3;
 
@@ -65,17 +69,20 @@ public class XmlValidationModeDetector {
 
 	/**
 	 * The token that indicates the start of an XML comment.
+	 * xml注释开头
 	 */
 	private static final String START_COMMENT = "<!--";
 
 	/**
 	 * The token that indicates the end of an XML comment.
+	 * xml注释结尾
 	 */
 	private static final String END_COMMENT = "-->";
 
 
 	/**
 	 * Indicates whether or not the current parse position is inside an XML comment.
+	 * 标记当前解析内容是否在xml的注释内容中
 	 */
 	private boolean inComment;
 
@@ -83,6 +90,7 @@ public class XmlValidationModeDetector {
 	/**
 	 * Detect the validation mode for the XML document in the supplied {@link InputStream}.
 	 * Note that the supplied {@link InputStream} is closed by this method before returning.
+	 * 检测xml的校验模式
 	 * @param inputStream the InputStream to parse
 	 * @throws IOException in case of I/O failure
 	 * @see #VALIDATION_DTD
@@ -90,19 +98,23 @@ public class XmlValidationModeDetector {
 	 */
 	public int detectValidationMode(InputStream inputStream) throws IOException {
 		// Peek into the file to look for DOCTYPE.
+		// 查看文件查找DOCTYPE
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		try {
 			boolean isDtdValidated = false;
 			String content;
 			while ((content = reader.readLine()) != null) {
 				content = consumeCommentTokens(content);
+				// 判断是否是空行或者是注释行则略过
 				if (this.inComment || !StringUtils.hasText(content)) {
 					continue;
 				}
+				// 是否包含DOCTYPE，包含则是DTD，否则就是XSD
 				if (hasDoctype(content)) {
 					isDtdValidated = true;
 					break;
 				}
+				//读到<开始符号，验证模式肯定在开始符合之前
 				if (hasOpeningTag(content)) {
 					// End of meaningful data...
 					break;
@@ -146,6 +158,7 @@ public class XmlValidationModeDetector {
 	 * Consume all leading and trailing comments in the given String and return
 	 * the remaining content, which may be empty since the supplied content might
 	 * be all comment data.
+	 * 去掉内容前后部分的<!-- -->
 	 */
 	@Nullable
 	private String consumeCommentTokens(String line) {
