@@ -43,6 +43,8 @@ import org.springframework.util.StringUtils;
  * Default implementation of the {@link BeanDefinitionDocumentReader} interface that
  * reads bean definitions according to the "spring-beans" DTD and XSD format
  * (Spring's default XML bean definition format).
+ * BeanDefinitionDocumentReader接口 的默认实现类，
+ * 根据DTD和XSD（XSD是定义Spring bean的默认xml定义格式）格式读取定义好的bean
  *
  * <p>The structure, elements, and attribute names of the required XML document
  * are hard-coded in this class. (Of course a transform could be run if necessary
@@ -93,6 +95,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	@Override
 	public void registerBeanDefinitions(Document doc, XmlReaderContext readerContext) {
 		this.readerContext = readerContext;
+		// 准备工作完成了，开始真正的表演了--解析
 		doRegisterBeanDefinitions(doc.getDocumentElement());
 	}
 
@@ -116,6 +119,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	/**
 	 * Register each bean definition within the given root {@code <beans/>} element.
+	 * 注册<beans>下面的每个bean
 	 */
 	@SuppressWarnings("deprecation")  // for Environment.acceptsProfiles(String...)
 	protected void doRegisterBeanDefinitions(Element root) {
@@ -125,10 +129,12 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		// the new (child) delegate with a reference to the parent for fallback purposes,
 		// then ultimately reset this.delegate back to its original (parent) reference.
 		// this behavior emulates a stack of delegates without actually necessitating one.
+		// 这种行为模拟了一堆委托，而实际上并不需要一个委托
 		BeanDefinitionParserDelegate parent = this.delegate;
 		this.delegate = createDelegate(getReaderContext(), root, parent);
 
 		if (this.delegate.isDefaultNamespace(root)) {
+			// profile="dev" or  profile="production" -> 方便进行切换开发环境和部署环境
 			String profileSpec = root.getAttribute(PROFILE_ATTRIBUTE);
 			if (StringUtils.hasText(profileSpec)) {
 				String[] specifiedProfiles = StringUtils.tokenizeToStringArray(
@@ -145,8 +151,10 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			}
 		}
 
+		// 模板方法，解析前处理，留给子类实现
 		preProcessXml(root);
 		parseBeanDefinitions(root, this.delegate);
+		// 模板方法，解析后处理，留给子类实现
 		postProcessXml(root);
 
 		this.delegate = parent;
@@ -162,6 +170,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	/**
 	 * Parse the elements at the root level in the document:
+	 * 解析文档顶端的元素
 	 * "import", "alias", "bean".
 	 * @param root the DOM root element of the document
 	 */
@@ -173,15 +182,18 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 				if (node instanceof Element) {
 					Element ele = (Element) node;
 					if (delegate.isDefaultNamespace(ele)) {
+						// 处理默认标签
 						parseDefaultElement(ele, delegate);
 					}
 					else {
+						// 处理自定义标签
 						delegate.parseCustomElement(ele);
 					}
 				}
 			}
 		}
 		else {
+			// 自定义标签解析
 			delegate.parseCustomElement(root);
 		}
 	}
@@ -197,7 +209,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			processBeanDefinition(ele, delegate);
 		}
 		else if (delegate.nodeNameEquals(ele, NESTED_BEANS_ELEMENT)) {
-			// recurse
+			// recurse ->递归
 			doRegisterBeanDefinitions(ele);
 		}
 	}

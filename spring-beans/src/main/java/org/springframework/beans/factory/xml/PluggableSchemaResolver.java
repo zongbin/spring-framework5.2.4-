@@ -113,6 +113,7 @@ public class PluggableSchemaResolver implements EntityResolver {
 		}
 
 		if (systemId != null) {
+			// 到 META-INF/spring.schemas目录下寻找XSD本地验证文件路径
 			String resourceLocation = getSchemaMappings().get(systemId);
 			if (resourceLocation == null && systemId.startsWith("https:")) {
 				// Retrieve canonical http schema mapping even for https declaration

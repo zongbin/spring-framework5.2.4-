@@ -429,7 +429,7 @@ public class BeanDefinitionParserDelegate {
 						"' as bean name and " + aliases + " as aliases");
 			}
 		}
-
+		// 检验name唯一
 		if (containingBean == null) {
 			checkNameUniqueness(beanName, aliases, ele);
 		}
@@ -503,21 +503,26 @@ public class BeanDefinitionParserDelegate {
 		this.parseState.push(new BeanEntry(beanName));
 
 		String className = null;
+		// 解析class属性
 		if (ele.hasAttribute(CLASS_ATTRIBUTE)) {
 			className = ele.getAttribute(CLASS_ATTRIBUTE).trim();
 		}
+		// 解析parent属性
 		String parent = null;
 		if (ele.hasAttribute(PARENT_ATTRIBUTE)) {
 			parent = ele.getAttribute(PARENT_ATTRIBUTE);
 		}
 
 		try {
+			// BeanDefinition是xml中<bean>在容器中的表现形式
 			AbstractBeanDefinition bd = createBeanDefinition(className, parent);
-
+			// 解析bean的所有元素
 			parseBeanDefinitionAttributes(ele, beanName, containingBean, bd);
 			bd.setDescription(DomUtils.getChildElementValueByTagName(ele, DESCRIPTION_ELEMENT));
-
+			// meta里的内容不会体现在bean的属性当中,而是一个额外的声明,
+			// 当需要里面的属性时,可以通过BeanDefinition的getAttribute(key)获取
 			parseMetaElements(ele, bd);
+			// 解析lookup-method属性 获取器注入
 			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
 			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
 
@@ -556,6 +561,7 @@ public class BeanDefinitionParserDelegate {
 	public AbstractBeanDefinition parseBeanDefinitionAttributes(Element ele, String beanName,
 			@Nullable BeanDefinition containingBean, AbstractBeanDefinition bd) {
 
+		// 解析singleton属性
 		if (ele.hasAttribute(SINGLETON_ATTRIBUTE)) {
 			error("Old 1.x 'singleton' attribute in use - upgrade to 'scope' declaration", ele);
 		}
@@ -564,19 +570,21 @@ public class BeanDefinitionParserDelegate {
 		}
 		else if (containingBean != null) {
 			// Take default from containing bean in case of an inner bean definition.
+			// 在嵌入 BeanDefinition情况下且没有单独指定scope属性使用父类默认的属性
 			bd.setScope(containingBean.getScope());
 		}
-
+		// 解析abstract属性
 		if (ele.hasAttribute(ABSTRACT_ATTRIBUTE)) {
 			bd.setAbstract(TRUE_VALUE.equals(ele.getAttribute(ABSTRACT_ATTRIBUTE)));
 		}
-
+		// 解析lazy-init属性
 		String lazyInit = ele.getAttribute(LAZY_INIT_ATTRIBUTE);
 		if (isDefaultValue(lazyInit)) {
 			lazyInit = this.defaults.getLazyInit();
 		}
+		// 没有配置或者配置的不是"true"都会被设置为false
 		bd.setLazyInit(TRUE_VALUE.equals(lazyInit));
-
+		// 解析autowire属性
 		String autowire = ele.getAttribute(AUTOWIRE_ATTRIBUTE);
 		bd.setAutowireMode(getAutowireMode(autowire));
 
@@ -654,8 +662,10 @@ public class BeanDefinitionParserDelegate {
 				Element metaElement = (Element) node;
 				String key = metaElement.getAttribute(KEY_ATTRIBUTE);
 				String value = metaElement.getAttribute(VALUE_ATTRIBUTE);
+				// 使用key value构造BeanMetadataAttribute
 				BeanMetadataAttribute attribute = new BeanMetadataAttribute(key, value);
 				attribute.setSource(extractSource(metaElement));
+				// 记录信息
 				attributeAccessor.addMetadataAttribute(attribute);
 			}
 		}
@@ -1528,6 +1538,7 @@ public class BeanDefinitionParserDelegate {
 
 	/**
 	 * Determine whether the given node indicates the default namespace.
+	 * 确定给定的结点是否包含默认的命名空间
 	 */
 	public boolean isDefaultNamespace(Node node) {
 		return isDefaultNamespace(getNamespaceURI(node));
