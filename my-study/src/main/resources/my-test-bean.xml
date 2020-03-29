@@ -5,7 +5,23 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 	<bean id="myTest" class="MyTestBean">
 		<meta key="meta_name" value="meta data"/>
+		<!--构造方法注入-->
+		<!--<constructor-arg name="hello1">
+			<value>你好</value>
+		</constructor-arg>
+		<constructor-arg name="lists1">
+			<list>
+				<value>ss1</value>
+				<value>mmm1</value>
+			</list>
+		</constructor-arg>-->
+		<!--属性注入-->
 		<property name="hello" value="hello Spring"/>
-
+		<property name="lists">
+			<list>
+				<value>ss</value>
+				<value>mmm</value>
+			</list>
+		</property>
 	</bean>
 </beans>

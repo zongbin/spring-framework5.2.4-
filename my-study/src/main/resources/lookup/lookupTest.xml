@@ -2,6 +2,10 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!--
+	获取器注入是一种特殊的方法注入，它是把一个方法声明为返回某种类型的bean，
+	但实际要返回的bean是在配置文件里面配置的，此方法可用在设计有些可插拔的功能上，解除程序依赖
+	-->
 	<bean id="myTest" class="com.zongbin.cn.lookup.test.GetBeanTest">
 		<lookup-method name="getBean" bean="student"/>
 	</bean>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<!--
+	方法替换：可以在运行时用新的方法替换现有的方法。
+	与look-up不同的是，replaced-method不但可以动态的替换返回实体bean，而且还能动态地改变
+	原有方法的逻辑
+	-->
+	<bean id="testChangeMethod" class="com.zongbin.cn.replaced.bean.TestChangeMethod">
+		<replaced-method name="changeMe" replacer="testMethodReplacer"/>
+	</bean>
+	<bean id="testMethodReplacer" class="com.zongbin.cn.replaced.bean.TestMethodReplacer"/>
+</beans>

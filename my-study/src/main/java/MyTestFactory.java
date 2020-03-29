@@ -7,6 +7,6 @@ public class MyTestFactory {
 		// 创建spring容器
 		BeanFactory bf = new XmlBeanFactory(new ClassPathResource("my-test-bean.xml"));
 		MyTestBean myTestBean = bf.getBean("myTest",MyTestBean.class);
-		System.out.println(myTestBean.getHello());
+		System.out.println(myTestBean);
 	}
 }
