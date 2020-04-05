@@ -4,6 +4,6 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 	   http://www.springframework.org/schema/beans/spring-beans.xsd
 	   http://www.zongbin.com/schema/user
-	   http://www.zongbin.com/schema/user.xsd">
+	   https://www.springframework.org/schema/user/spring-user.xsd">
 	<myname:user id="testBean" userName="宗彬" email="chen_6089@163.com"/>
 </beans>
